@@ -1,0 +1,13 @@
+[0m[[0m[0mdebug[0m] [0m[0mPackaging D:\Big Data\stackoverflow-survey-analysis\target\scala-2.13\stackoverflow-survey-analysis_2.13-1.0.0.jar ...[0m
+[0m[[0m[0mdebug[0m] [0m[0mInput file mappings:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	com[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Big Data\stackoverflow-survey-analysis\target\scala-2.13\classes\com[0m
+[0m[[0m[0mdebug[0m] [0m[0m	com\github[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Big Data\stackoverflow-survey-analysis\target\scala-2.13\classes\com\github[0m
+[0m[[0m[0mdebug[0m] [0m[0m	com\github\iRoseM[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Big Data\stackoverflow-survey-analysis\target\scala-2.13\classes\com\github\iRoseM[0m
+[0m[[0m[0mdebug[0m] [0m[0m	com\github\iRoseM\Main$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Big Data\stackoverflow-survey-analysis\target\scala-2.13\classes\com\github\iRoseM\Main$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	com\github\iRoseM\Main.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Big Data\stackoverflow-survey-analysis\target\scala-2.13\classes\com\github\iRoseM\Main.class[0m
+[0m[[0m[0mdebug[0m] [0m[0mDone packaging.[0m
