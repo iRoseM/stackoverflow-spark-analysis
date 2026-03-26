@@ -24,6 +24,7 @@ object SQL_Analysis {
     // Register as temporary view
     df.createOrReplaceTempView("developer_survey")
     
+
     // ============================================================
     // QUERY 1: Average Salary by Developer Type
     // ============================================================
@@ -32,25 +33,53 @@ object SQL_Analysis {
     println("=" * 60)
     
     val query1 = """
-      SELECT 
-        DevType_segment,
-        COUNT(*) as developer_count,
-        ROUND(AVG(Salary_num), 2) as avg_salary_usd
-      FROM developer_survey
-      GROUP BY DevType_segment
-      ORDER BY avg_salary_usd DESC
-    """
+  SELECT 
+    DevType_segment,
+    COUNT(*) as developer_count,
+    ROUND(AVG(Salary_num), 2) as avg_salary_usd,
+    ROUND(STDDEV(Salary_num), 2) as salary_stddev,     
+    ROUND(VARIANCE(Salary_num), 2) as salary_variance   
+  FROM developer_survey
+  GROUP BY DevType_segment
+  ORDER BY avg_salary_usd DESC
+"""
     
     spark.sql(query1).show(10, truncate = false)
     
     // ============================================================
-    // QUERY 2: Educational Pathways to Data Roles
+    // QUERY 2: Statistical Summary of Salaries
     // ============================================================
     println("\n" + "=" * 60)
-    println("QUERY 2: Educational Pathways to Data Roles")
+    println("QUERY 2: Statistical Summary of Salaries")
     println("=" * 60)
     
     val query2 = """
+  SELECT 
+    COUNT(*) as total_records,
+    COUNT(DISTINCT Country) as distinct_countries,
+    COUNT(DISTINCT DevType_segment) as distinct_roles,
+    ROUND(AVG(Salary_num), 0) as mean_salary,
+    ROUND(STDDEV(Salary_num), 0) as stddev_salary,
+    ROUND(VARIANCE(Salary_num), 0) as variance_salary,
+    ROUND(PERCENTILE(Salary_num, 0.25), 0) as q1_salary,
+    ROUND(PERCENTILE(Salary_num, 0.5), 0) as median_salary,
+    ROUND(PERCENTILE(Salary_num, 0.75), 0) as q3_salary,
+    ROUND(MIN(Salary_num), 0) as min_salary,
+    ROUND(MAX(Salary_num), 0) as max_salary
+  FROM developer_survey
+  WHERE Salary_num > 0 AND Salary_num < 500000
+"""
+    
+    spark.sql(query2).show(truncate = false)
+    
+    // ============================================================
+    // QUERY 3: Educational Pathways to Data Roles
+    // ============================================================
+    println("\n" + "=" * 60)
+    println("QUERY 3: Educational Pathways to Data Roles")
+    println("=" * 60)
+    
+    val query3 = """
  SELECT 
   UndergradMajor,
   COUNT(*) as total_developers,
@@ -64,16 +93,16 @@ ORDER BY pct_in_data_roles DESC
 LIMIT 10
     """
     
-    spark.sql(query2).show(truncate = false)
+    spark.sql(query3).show(truncate = false)
     
     // ============================================================
-    // QUERY 3: Self-Learning vs Formal Education Impact
+    // QUERY 4: Self-Learning vs Formal Education Impact
     // ============================================================
     println("\n" + "=" * 60)
-    println("QUERY 3: Self-Learning vs Formal Education Impact")
+    println("QUERY 4: Self-Learning vs Formal Education Impact")
     println("=" * 60)
     
-    val query3 = """
+    val query4 = """
       SELECT 
         CASE 
           WHEN EducationTypes LIKE '%Taught yourself%' 
@@ -95,16 +124,16 @@ LIMIT 10
       ORDER BY avg_salary DESC
     """
     
-    spark.sql(query3).show(truncate = false)
+    spark.sql(query4).show(truncate = false)
     
     // ============================================================
-    // QUERY 4: Top Programming Languages by Developer Type
+    // QUERY 5: Top Programming Languages by Developer Type
     // ============================================================
     println("\n" + "=" * 60)
-    println("QUERY 4: Top Programming Languages per Developer Type")
+    println("QUERY 5: Top Programming Languages per Developer Type")
     println("=" * 60)
     
-    val query4 = """
+    val query5 = """
       WITH language_counts AS (
         SELECT 
           DevType_segment,
@@ -132,16 +161,16 @@ LIMIT 10
       ORDER BY DevType_segment, rank
     """
     
-    spark.sql(query4).show(20, truncate = false)
+    spark.sql(query5).show(20, truncate = false)
     
     // ============================================================
-    // QUERY 5: Salary Distribution by Age and Experience (ORDERED)
+    // QUERY 6: Salary Distribution by Age and Experience
     // ============================================================
     println("\n" + "=" * 60)
-    println("QUERY 5: Salary Distribution by Age and Experience Groups")
+    println("QUERY 6: Salary Distribution by Age and Experience Groups")
     println("=" * 60)
     
-    val query5 = """
+    val query6 = """
       SELECT 
         CASE 
           WHEN Age LIKE 'Under%' THEN 'Under 18 (Pre-Career)'
@@ -203,16 +232,16 @@ LIMIT 10
         END
     """
     
-    spark.sql(query5).show(200, truncate = false)
+    spark.sql(query6).show(200, truncate = false)
         
     // ============================================================
-    // QUERY 6: Global Talent Distribution
+    // QUERY 7: Global Talent Distribution
     // ============================================================
     println("\n" + "=" * 60)
-    println("QUERY 6: Global Talent Distribution - Top 15 Countries")
+    println("QUERY 7: Global Talent Distribution - Top 15 Countries")
     println("=" * 60)
     
-    val query6 = """
+    val query7 = """
 SELECT 
   Country,
   COUNT(*) as developer_count,
@@ -227,7 +256,7 @@ ORDER BY developer_count DESC
 LIMIT 15
     """
     
-    spark.sql(query6).show(truncate = false)
+    spark.sql(query7).show(truncate = false)
         
     spark.stop()
   }
