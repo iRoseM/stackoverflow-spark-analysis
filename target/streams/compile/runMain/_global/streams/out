@@ -1,96 +1,28 @@
-[0m[[0m[31merror[0m] [0m[0morg.apache.spark.sql.AnalysisException: [SCALAR_SUBQUERY_IS_IN_GROUP_BY_OR_AGGREGATE_FUNCTION] The correlated scalar subquery '"scalarsubquery(language)"' is neither present in GROUP BY, nor in an aggregate function.[0m
-[0m[[0m[31merror[0m] [0m[0mAdd it to GROUP BY using ordinal position or wrap it in `first()` (or `first_value`) if you don't care which value you get. SQLSTATE: 0A000; line 15 pos 8;[0m
-[0m[[0m[31merror[0m] [0m[0mGlobalLimit 10[0m
-[0m[[0m[31merror[0m] [0m[0m+- LocalLimit 10[0m
-[0m[[0m[31merror[0m] [0m[0m   +- Sort [demand_in_ai_ml#283L DESC NULLS LAST], true[0m
-[0m[[0m[31merror[0m] [0m[0m      +- Aggregate [language#313], [language#313, count(1) AS demand_in_ai_ml#283L, scalar-subquery#284 [language#313] AS supply_in_non_ai#285L][0m
-[0m[[0m[31merror[0m] [0m[0m         :  +- Aggregate [count(1) AS count(1)#316L][0m
-[0m[[0m[31merror[0m] [0m[0m         :     +- Filter (language#314 = outer(language#313))[0m
-[0m[[0m[31merror[0m] [0m[0m         :        +- SubqueryAlias ns[0m
-[0m[[0m[31merror[0m] [0m[0m         :           +- SubqueryAlias non_ai_skills[0m
-[0m[[0m[31merror[0m] [0m[0m         :              +- SubqueryAlias non_ai_skills[0m
-[0m[[0m[31merror[0m] [0m[0m         :                 +- Project [language#314][0m
-[0m[[0m[31merror[0m] [0m[0m         :                    +- Generate explode(split(LanguageWorkedWith#297, ;, -1)), false, [language#314][0m
-[0m[[0m[31merror[0m] [0m[0m         :                       +- Filter NOT DevType_segment#299 IN (Data,AI/ML,Student/Academic)[0m
-[0m[[0m[31merror[0m] [0m[0m         :                          +- SubqueryAlias developer_survey[0m
-[0m[[0m[31merror[0m] [0m[0m         :                             +- View (`developer_survey`, [Country#288, DevType#289, Employment#290, YearsCoding#291, Age#292, Gender#293, JobSatisfaction#294, UndergradMajor#295, EducationTypes#296, LanguageWorkedWith#297, ConvertedSalary#298, DevType_segment#299, Languages_count#300, EducationTypes_count#301, Salary_num#302, Salary_log#303, DevType_segment_indexed#304, Country_indexed#305, Employment_indexed#306, Gender_indexed#307, UndergradMajor_indexed#308, Age_encoded#309, YearsCoding_encoded#310, JobSatisfaction_encoded#311])[0m
-[0m[[0m[31merror[0m] [0m[0m         :                                +- Relation [Country#288,DevType#289,Employment#290,YearsCoding#291,Age#292,Gender#293,JobSatisfaction#294,UndergradMajor#295,EducationTypes#296,LanguageWorkedWith#297,ConvertedSalary#298,DevType_segment#299,Languages_count#300,EducationTypes_count#301,Salary_num#302,Salary_log#303,DevType_segment_indexed#304,Country_indexed#305,Employment_indexed#306,Gender_indexed#307,UndergradMajor_indexed#308,Age_encoded#309,YearsCoding_encoded#310,JobSatisfaction_encoded#311] csv[0m
-[0m[[0m[31merror[0m] [0m[0m         +- SubqueryAlias s[0m
-[0m[[0m[31merror[0m] [0m[0m            +- SubqueryAlias ai_ml_skills[0m
-[0m[[0m[31merror[0m] [0m[0m               +- SubqueryAlias ai_ml_skills[0m
-[0m[[0m[31merror[0m] [0m[0m                  +- Project [language#313][0m
-[0m[[0m[31merror[0m] [0m[0m                     +- Generate explode(split(LanguageWorkedWith#26, ;, -1)), false, [language#313][0m
-[0m[[0m[31merror[0m] [0m[0m                        +- Filter DevType_segment#28 IN (Data,AI/ML)[0m
-[0m[[0m[31merror[0m] [0m[0m                           +- SubqueryAlias developer_survey[0m
-[0m[[0m[31merror[0m] [0m[0m                              +- View (`developer_survey`, [Country#17, DevType#18, Employment#19, YearsCoding#20, Age#21, Gender#22, JobSatisfaction#23, UndergradMajor#24, EducationTypes#25, LanguageWorkedWith#26, ConvertedSalary#27, DevType_segment#28, Languages_count#29, EducationTypes_count#30, Salary_num#31, Salary_log#32, DevType_segment_indexed#33, Country_indexed#34, Employment_indexed#35, Gender_indexed#36, UndergradMajor_indexed#37, Age_encoded#38, YearsCoding_encoded#39, JobSatisfaction_encoded#40])[0m
-[0m[[0m[31merror[0m] [0m[0m                                 +- Relation [Country#17,DevType#18,Employment#19,YearsCoding#20,Age#21,Gender#22,JobSatisfaction#23,UndergradMajor#24,EducationTypes#25,LanguageWorkedWith#26,ConvertedSalary#27,DevType_segment#28,Languages_count#29,EducationTypes_count#30,Salary_num#31,Salary_log#32,DevType_segment_indexed#33,Country_indexed#34,Employment_indexed#35,Gender_indexed#36,UndergradMajor_indexed#37,Age_encoded#38,YearsCoding_encoded#39,JobSatisfaction_encoded#40] csv[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.analysis.package$AnalysisErrorAt.failAnalysis(package.scala:52)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.expressions.ExprUtils$.checkValidAggregateExpression$1(ExprUtils.scala:184)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.expressions.ExprUtils$.$anonfun$assertValidAggregation$7(ExprUtils.scala:193)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.expressions.ExprUtils$.$anonfun$assertValidAggregation$7$adapted(ExprUtils.scala:193)[0m
-[0m[[0m[31merror[0m] [0m[0m	at scala.collection.immutable.Vector.foreach(Vector.scala:2125)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.expressions.ExprUtils$.checkValidAggregateExpression$1(ExprUtils.scala:193)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.expressions.ExprUtils$.$anonfun$assertValidAggregation$11(ExprUtils.scala:214)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.expressions.ExprUtils$.$anonfun$assertValidAggregation$11$adapted(ExprUtils.scala:214)[0m
-[0m[[0m[31merror[0m] [0m[0m	at scala.collection.immutable.List.foreach(List.scala:323)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.expressions.ExprUtils$.assertValidAggregation(ExprUtils.scala:214)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.analysis.CheckAnalysis.$anonfun$checkAnalysis0$2(CheckAnalysis.scala:553)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.analysis.CheckAnalysis.$anonfun$checkAnalysis0$2$adapted(CheckAnalysis.scala:281)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.trees.TreeNode.foreachUp(TreeNode.scala:273)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.trees.TreeNode.$anonfun$foreachUp$1(TreeNode.scala:272)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.trees.TreeNode.$anonfun$foreachUp$1$adapted(TreeNode.scala:272)[0m
-[0m[[0m[31merror[0m] [0m[0m	at scala.collection.immutable.Vector.foreach(Vector.scala:2125)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.trees.TreeNode.foreachUp(TreeNode.scala:272)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.trees.TreeNode.$anonfun$foreachUp$1(TreeNode.scala:272)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.trees.TreeNode.$anonfun$foreachUp$1$adapted(TreeNode.scala:272)[0m
-[0m[[0m[31merror[0m] [0m[0m	at scala.collection.immutable.Vector.foreach(Vector.scala:2125)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.trees.TreeNode.foreachUp(TreeNode.scala:272)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.trees.TreeNode.$anonfun$foreachUp$1(TreeNode.scala:272)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.trees.TreeNode.$anonfun$foreachUp$1$adapted(TreeNode.scala:272)[0m
-[0m[[0m[31merror[0m] [0m[0m	at scala.collection.immutable.Vector.foreach(Vector.scala:2125)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.trees.TreeNode.foreachUp(TreeNode.scala:272)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.analysis.CheckAnalysis.checkAnalysis0(CheckAnalysis.scala:281)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.analysis.CheckAnalysis.checkAnalysis0$(CheckAnalysis.scala:252)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.analysis.Analyzer.checkAnalysis0(Analyzer.scala:289)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.analysis.CheckAnalysis.checkAnalysis(CheckAnalysis.scala:241)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.analysis.CheckAnalysis.checkAnalysis$(CheckAnalysis.scala:228)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.analysis.Analyzer.checkAnalysis(Analyzer.scala:289)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.analysis.resolver.HybridAnalyzer.$anonfun$resolveInFixedPoint$1(HybridAnalyzer.scala:238)[0m
-[0m[[0m[31merror[0m] [0m[0m	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.QueryPlanningTracker$.withTracker(QueryPlanningTracker.scala:89)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.analysis.resolver.HybridAnalyzer.resolveInFixedPoint(HybridAnalyzer.scala:238)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.analysis.resolver.HybridAnalyzer.$anonfun$apply$1(HybridAnalyzer.scala:91)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.analysis.resolver.HybridAnalyzer.withTrackedAnalyzerBridgeState(HybridAnalyzer.scala:122)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.analysis.resolver.HybridAnalyzer.apply(HybridAnalyzer.scala:84)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.analysis.Analyzer.$anonfun$executeAndCheck$1(Analyzer.scala:322)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.plans.logical.AnalysisHelper$.markInAnalyzer(AnalysisHelper.scala:423)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.analysis.Analyzer.executeAndCheck(Analyzer.scala:322)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.QueryExecution.$anonfun$lazyAnalyzed$2(QueryExecution.scala:139)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.catalyst.QueryPlanningTracker.measurePhase(QueryPlanningTracker.scala:148)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.QueryExecution.$anonfun$executePhase$2(QueryExecution.scala:330)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.QueryExecution$.withInternalError(QueryExecution.scala:717)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.QueryExecution.$anonfun$executePhase$1(QueryExecution.scala:330)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.SparkSession.withActive(SparkSession.scala:804)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.QueryExecution.executePhase(QueryExecution.scala:329)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.QueryExecution.$anonfun$lazyAnalyzed$1(QueryExecution.scala:139)[0m
-[0m[[0m[31merror[0m] [0m[0m	at scala.util.Try$.apply(Try.scala:217)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.util.Utils$.doTryWithCallerStacktrace(Utils.scala:1392)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.util.Utils$.getTryWithCallerStacktrace(Utils.scala:1453)[0m
+[0m[[0m[31merror[0m] [0m[0mjava.util.concurrent.ExecutionException: Boxed Exception[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.concurrent.impl.Promise$.scala$concurrent$impl$Promise$$resolve(Promise.scala:99)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.concurrent.Promise.complete(Promise.scala:57)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.concurrent.Promise.complete$(Promise.scala:56)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.concurrent.impl.Promise$DefaultPromise.complete(Promise.scala:104)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.concurrent.Promise.failure(Promise.scala:109)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.concurrent.Promise.failure$(Promise.scala:109)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.concurrent.impl.Promise$DefaultPromise.failure(Promise.scala:104)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.adaptive.ResultQueryStageExec.$anonfun$doMaterialize$2(QueryStageExec.scala:333)[0m
+[0m[[0m[31merror[0m] [0m[0m	at java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:863)[0m
+[0m[[0m[31merror[0m] [0m[0m	at java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:841)[0m
+[0m[[0m[31merror[0m] [0m[0m	at java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:510)[0m
+[0m[[0m[31merror[0m] [0m[0m	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1773)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.util.Utils$.getTryWithCallerStacktrace(Utils.scala:1439)[0m
 [0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.util.LazyTry.get(LazyTry.scala:58)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.QueryExecution.analyzed(QueryExecution.scala:150)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.QueryExecution.assertAnalyzed(QueryExecution.scala:90)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.classic.Dataset$.$anonfun$ofRows$5(Dataset.scala:138)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.SparkSession.withActive(SparkSession.scala:804)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.classic.Dataset$.ofRows(Dataset.scala:135)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.classic.SparkSession.$anonfun$sql$4(SparkSession.scala:584)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.SparkSession.withActive(SparkSession.scala:804)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.classic.SparkSession.sql(SparkSession.scala:561)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.classic.SparkSession.sql(SparkSession.scala:589)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.classic.SparkSession.sql(SparkSession.scala:680)[0m
-[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.classic.SparkSession.sql(SparkSession.scala:92)[0m
-[0m[[0m[31merror[0m] [0m[0m	at SQL_Analysis$.main(SQL_Analysis.scala:165)[0m
-[0m[[0m[31merror[0m] [0m[0m	at SQL_Analysis.main(SQL_Analysis.scala)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.QueryExecution.commandExecuted(QueryExecution.scala:131)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.QueryExecution.assertCommandExecuted(QueryExecution.scala:192)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.classic.DataFrameWriter.runCommand(DataFrameWriter.scala:622)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.classic.DataFrameWriter.saveToV1Source(DataFrameWriter.scala:273)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.classic.DataFrameWriter.saveInternal(DataFrameWriter.scala:241)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.classic.DataFrameWriter.save(DataFrameWriter.scala:118)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.DataFrameWriter.csv(DataFrameWriter.scala:426)[0m
+[0m[[0m[31merror[0m] [0m[0m	at BigDataPreprocessing$.main(BigData_Preprocessing.scala:321)[0m
+[0m[[0m[31merror[0m] [0m[0m	at BigDataPreprocessing.main(BigData_Preprocessing.scala)[0m
 [0m[[0m[31merror[0m] [0m[0m	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)[0m
 [0m[[0m[31merror[0m] [0m[0m	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)[0m
 [0m[[0m[31merror[0m] [0m[0m	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)[0m
@@ -108,29 +40,40 @@
 [0m[[0m[31merror[0m] [0m[0m	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)[0m
 [0m[[0m[31merror[0m] [0m[0m	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)[0m
 [0m[[0m[31merror[0m] [0m[0m	at java.base/java.lang.Thread.run(Thread.java:842)[0m
-[0m[[0m[31merror[0m] [0m[0m(Compile / [31mrunMain[0m) org.apache.spark.sql.AnalysisException: [SCALAR_SUBQUERY_IS_IN_GROUP_BY_OR_AGGREGATE_FUNCTION] The correlated scalar subquery '"scalarsubquery(language)"' is neither present in GROUP BY, nor in an aggregate function.[0m
-[0m[[0m[31merror[0m] [0m[0mAdd it to GROUP BY using ordinal position or wrap it in `first()` (or `first_value`) if you don't care which value you get. SQLSTATE: 0A000; line 15 pos 8;[0m
-[0m[[0m[31merror[0m] [0m[0mGlobalLimit 10[0m
-[0m[[0m[31merror[0m] [0m[0m+- LocalLimit 10[0m
-[0m[[0m[31merror[0m] [0m[0m   +- Sort [demand_in_ai_ml#283L DESC NULLS LAST], true[0m
-[0m[[0m[31merror[0m] [0m[0m      +- Aggregate [language#313], [language#313, count(1) AS demand_in_ai_ml#283L, scalar-subquery#284 [language#313] AS supply_in_non_ai#285L][0m
-[0m[[0m[31merror[0m] [0m[0m         :  +- Aggregate [count(1) AS count(1)#316L][0m
-[0m[[0m[31merror[0m] [0m[0m         :     +- Filter (language#314 = outer(language#313))[0m
-[0m[[0m[31merror[0m] [0m[0m         :        +- SubqueryAlias ns[0m
-[0m[[0m[31merror[0m] [0m[0m         :           +- SubqueryAlias non_ai_skills[0m
-[0m[[0m[31merror[0m] [0m[0m         :              +- SubqueryAlias non_ai_skills[0m
-[0m[[0m[31merror[0m] [0m[0m         :                 +- Project [language#314][0m
-[0m[[0m[31merror[0m] [0m[0m         :                    +- Generate explode(split(LanguageWorkedWith#297, ;, -1)), false, [language#314][0m
-[0m[[0m[31merror[0m] [0m[0m         :                       +- Filter NOT DevType_segment#299 IN (Data,AI/ML,Student/Academic)[0m
-[0m[[0m[31merror[0m] [0m[0m         :                          +- SubqueryAlias developer_survey[0m
-[0m[[0m[31merror[0m] [0m[0m         :                             +- View (`developer_survey`, [Country#288, DevType#289, Employment#290, YearsCoding#291, Age#292, Gender#293, JobSatisfaction#294, UndergradMajor#295, EducationTypes#296, LanguageWorkedWith#297, ConvertedSalary#298, DevType_segment#299, Languages_count#300, EducationTypes_count#301, Salary_num#302, Salary_log#303, DevType_segment_indexed#304, Country_indexed#305, Employment_indexed#306, Gender_indexed#307, UndergradMajor_indexed#308, Age_encoded#309, YearsCoding_encoded#310, JobSatisfaction_encoded#311])[0m
-[0m[[0m[31merror[0m] [0m[0m         :                                +- Relation [Country#288,DevType#289,Employment#290,YearsCoding#291,Age#292,Gender#293,JobSatisfaction#294,UndergradMajor#295,EducationTypes#296,LanguageWorkedWith#297,ConvertedSalary#298,DevType_segment#299,Languages_count#300,EducationTypes_count#301,Salary_num#302,Salary_log#303,DevType_segment_indexed#304,Country_indexed#305,Employment_indexed#306,Gender_indexed#307,UndergradMajor_indexed#308,Age_encoded#309,YearsCoding_encoded#310,JobSatisfaction_encoded#311] csv[0m
-[0m[[0m[31merror[0m] [0m[0m         +- SubqueryAlias s[0m
-[0m[[0m[31merror[0m] [0m[0m            +- SubqueryAlias ai_ml_skills[0m
-[0m[[0m[31merror[0m] [0m[0m               +- SubqueryAlias ai_ml_skills[0m
-[0m[[0m[31merror[0m] [0m[0m                  +- Project [language#313][0m
-[0m[[0m[31merror[0m] [0m[0m                     +- Generate explode(split(LanguageWorkedWith#26, ;, -1)), false, [language#313][0m
-[0m[[0m[31merror[0m] [0m[0m                        +- Filter DevType_segment#28 IN (Data,AI/ML)[0m
-[0m[[0m[31merror[0m] [0m[0m                           +- SubqueryAlias developer_survey[0m
-[0m[[0m[31merror[0m] [0m[0m                              +- View (`developer_survey`, [Country#17, DevType#18, Employment#19, YearsCoding#20, Age#21, Gender#22, JobSatisfaction#23, UndergradMajor#24, EducationTypes#25, LanguageWorkedWith#26, ConvertedSalary#27, DevType_segment#28, Languages_count#29, EducationTypes_count#30, Salary_num#31, Salary_log#32, DevType_segment_indexed#33, Country_indexed#34, Employment_indexed#35, Gender_indexed#36, UndergradMajor_indexed#37, Age_encoded#38, YearsCoding_encoded#39, JobSatisfaction_encoded#40])[0m
-[0m[[0m[31merror[0m] [0m[0m                                 +- Relation [Country#17,DevType#18,Employment#19,YearsCoding#20,Age#21,Gender#22,JobSatisfaction#23,UndergradMajor#24,EducationTypes#25,LanguageWorkedWith#26,ConvertedSalary#27,DevType_segment#28,Languages_count#29,EducationTypes_count#30,Salary_num#31,Salary_log#32,DevType_segment_indexed#33,Country_indexed#34,Employment_indexed#35,Gender_indexed#36,UndergradMajor_indexed#37,Age_encoded#38,YearsCoding_encoded#39,JobSatisfaction_encoded#40] csv[0m
+[0m[[0m[31merror[0m] [0m[0mCaused by: java.lang.UnsatisfiedLinkError: 'boolean org.apache.hadoop.io.nativeio.NativeIO$Windows.access0(java.lang.String, int)'[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.hadoop.io.nativeio.NativeIO$Windows.access0(Native Method)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.hadoop.io.nativeio.NativeIO$Windows.access(NativeIO.java:817)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.hadoop.fs.FileUtil.canRead(FileUtil.java:1415)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.hadoop.fs.FileUtil.list(FileUtil.java:1620)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.hadoop.fs.RawLocalFileSystem.listStatus(RawLocalFileSystem.java:739)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.hadoop.fs.FileSystem.listStatus(FileSystem.java:2078)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.hadoop.fs.FileSystem.listStatus(FileSystem.java:2122)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.hadoop.fs.ChecksumFileSystem.listStatus(ChecksumFileSystem.java:961)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.hadoop.fs.FileSystem.listStatus(FileSystem.java:2078)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.hadoop.fs.FileSystem.listStatus(FileSystem.java:2122)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter.getAllCommittedTaskPaths(FileOutputCommitter.java:334)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter.commitJobInternal(FileOutputCommitter.java:404)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter.commitJob(FileOutputCommitter.java:377)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.internal.io.HadoopMapReduceCommitProtocol.commitJob(HadoopMapReduceCommitProtocol.scala:194)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.datasources.FileFormatWriter$.$anonfun$writeAndCommit$3(FileFormatWriter.scala:275)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.util.Utils$.timeTakenMs(Utils.scala:481)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.datasources.FileFormatWriter$.writeAndCommit(FileFormatWriter.scala:275)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.datasources.FileFormatWriter$.executeWrite(FileFormatWriter.scala:306)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.datasources.FileFormatWriter$.write(FileFormatWriter.scala:189)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.datasources.InsertIntoHadoopFsRelationCommand.run(InsertIntoHadoopFsRelationCommand.scala:195)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.command.DataWritingCommandExec.sideEffectResult$lzycompute(commands.scala:117)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.command.DataWritingCommandExec.sideEffectResult(commands.scala:115)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.command.DataWritingCommandExec.executeCollect(commands.scala:129)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.adaptive.AdaptiveSparkPlanExec.$anonfun$executeCollect$1(AdaptiveSparkPlanExec.scala:402)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.adaptive.ResultQueryStageExec.$anonfun$doMaterialize$1(QueryStageExec.scala:325)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.SQLExecution$.$anonfun$withThreadLocalCaptured$4(SQLExecution.scala:318)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.SQLExecution$.withSessionTagsApplied(SQLExecution.scala:268)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.SQLExecution$.$anonfun$withThreadLocalCaptured$3(SQLExecution.scala:316)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.JobArtifactSet$.withActiveJobArtifactState(JobArtifactSet.scala:94)[0m
+[0m[[0m[31merror[0m] [0m[0m	at org.apache.spark.sql.execution.SQLExecution$.$anonfun$withThreadLocalCaptured$2(SQLExecution.scala:312)[0m
+[0m[[0m[31merror[0m] [0m[0m	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1768)[0m
+[0m[[0m[31merror[0m] [0m[0m	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)[0m
+[0m[[0m[31merror[0m] [0m[0m	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)[0m
+[0m[[0m[31merror[0m] [0m[0m	at java.base/java.lang.Thread.run(Thread.java:842)[0m
+[0m[[0m[31merror[0m] [0m[0m(Compile / [31mrunMain[0m) java.util.concurrent.ExecutionException: Boxed Exception[0m

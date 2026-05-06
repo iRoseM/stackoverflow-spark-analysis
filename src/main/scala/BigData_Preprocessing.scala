@@ -5,13 +5,6 @@ import org.apache.spark.ml.feature.StringIndexer
 
 object BigDataPreprocessing {
 
-  // ============================================================
-  // HELPER FUNCTIONS
-  // ============================================================
-
-  /**
-   * Check if a column value is considered "missing" (comprehensive check)
-   */
   def isMissing(colName: String) = {
     val missingIndicators = Seq(
       "", "na", "n/a", "nan", "null", "NA", "N/A", "NaN",
@@ -25,10 +18,8 @@ object BigDataPreprocessing {
   }
 
   def main(args: Array[String]): Unit = {
+System.setProperty("hadoop.home.dir", "C:\\hadoop")
 
-    // ============================================================
-    // 1) CREATE SPARK SESSION
-    // ============================================================
     val spark = SparkSession.builder()
       .appName("StackOverflow Analysis")
       .master("local[*]")
@@ -45,7 +36,7 @@ object BigDataPreprocessing {
     val df0 = spark.read
       .option("header", "true")
       .option("inferSchema", "true")
-      .csv("survey_results_public.csv")
+      .csv("data/survey_results_public.csv")
 
     df0.show(5)
     println(s"df0 rows=${df0.count()}, cols=${df0.columns.length}")
@@ -68,8 +59,6 @@ object BigDataPreprocessing {
     // ============================================================
     // 4) DATA QUALITY CHECK
     // ============================================================
-
-    // -- Check Duplicates --
     if (df1.columns.contains("Respondent")) {
       val dupRespondent = df1.groupBy("Respondent").count()
         .filter("count > 1").count()
@@ -85,7 +74,6 @@ object BigDataPreprocessing {
     val dupFull = df1.count() - df1.distinct().count()
     println(s"Complete duplicate rows: $dupFull")
 
-    // -- Check Missing Values --
     println("\nMISSING VALUES BY COLUMN:")
     println("-" * 80)
     println(f"${"Column Name"}%-30s ${"Missing Count"}%15s ${"Percentage"}%15s")
@@ -94,18 +82,17 @@ object BigDataPreprocessing {
     val totalRows = df1.count()
     df1.columns.foreach { colName =>
       val missingCount = df1.filter(isMissing(colName)).count()
-      val missingPct = (missingCount.toDouble / totalRows) * 100
-      println(f"$colName%-30s $missingCount%15,d $missingPct%14.2f%%")
+      val missingPct   = (missingCount.toDouble / totalRows) * 100
+      // FIX 1: removed comma from %15,d → %15d
+      println(f"$colName%-30s ${missingCount}%15d $missingPct%14.2f%%")
     }
     println("-" * 80)
 
     // ============================================================
     // 5) HANDLE MISSING VALUES
     // ============================================================
-
     val originalCount = df0.count()
 
-    // Drop rows with missing critical columns (Country / DevType / Employment)
     val df2 = df1.filter(
       !isMissing("Country") &&
       !isMissing("DevType") &&
@@ -113,13 +100,12 @@ object BigDataPreprocessing {
     )
     println(s"df2 rows after dropping key-missing = ${df2.count()}")
 
-    // -- Handle DevType --
-    val dfStep1 = df2.filter(!isMissing("DevType"))
+    val dfStep1    = df2.filter(!isMissing("DevType"))
     val step1Count = dfStep1.count()
     println(s"Rows deleted (missing DevType): ${originalCount - step1Count}")
-    println(s"Rows remaining: $step1Count (${step1Count.toDouble / originalCount * 100:.1f}%)")
+    // FIX 2: :.1f is Python syntax — use f"...%.1f" in Scala
+    println(s"Rows remaining: $step1Count (${f"${step1Count.toDouble / originalCount * 100}%.1f"}%)")
 
-    // -- Handle Salary --
     val salaryMean = dfStep1
       .filter(!isMissing("ConvertedSalary"))
       .select(col("ConvertedSalary").cast("double").alias("salary"))
@@ -141,7 +127,6 @@ object BigDataPreprocessing {
     val zerosLeft = dfStep2.filter(col("ConvertedSalary") === 0).count()
     println(s"Zeros after filling: $zerosLeft")
 
-    // -- Handle EducationTypes, UndergradMajor, Gender --
     val dfStep3 = dfStep2
       .withColumn("EducationTypes",
         when(isMissing("EducationTypes"), "Unknown").otherwise(col("EducationTypes")))
@@ -150,13 +135,11 @@ object BigDataPreprocessing {
       .withColumn("Gender",
         when(isMissing("Gender"), "Unknown").otherwise(col("Gender")))
 
-    // -- Handle YearsCoding --
     val dfStep4 = dfStep3.withColumn(
       "YearsCoding",
       when(isMissing("YearsCoding"), "0-2 years").otherwise(col("YearsCoding"))
     )
 
-    // -- Handle JobSatisfaction (fill with mode) --
     val modeJobSatisfaction = dfStep4
       .filter(!isMissing("JobSatisfaction"))
       .groupBy("JobSatisfaction").count()
@@ -171,7 +154,6 @@ object BigDataPreprocessing {
         .otherwise(col("JobSatisfaction"))
     )
 
-    // -- Handle Age (fill with mode) --
     val modeAge = dfStep5
       .filter(!isMissing("Age"))
       .groupBy("Age").count()
@@ -185,7 +167,6 @@ object BigDataPreprocessing {
       when(isMissing("Age"), modeAge).otherwise(col("Age"))
     )
 
-    // -- Handle Employment (fill with mode) --
     val modeEmployment = dfStep6
       .filter(!isMissing("Employment"))
       .groupBy("Employment").count()
@@ -199,7 +180,6 @@ object BigDataPreprocessing {
       when(isMissing("Employment"), modeEmployment).otherwise(col("Employment"))
     )
 
-    // -- Handle Country (fill with mode) --
     val modeCountry = dfStep7
       .filter(!isMissing("Country"))
       .groupBy("Country").count()
@@ -213,7 +193,6 @@ object BigDataPreprocessing {
       when(isMissing("Country"), modeCountry).otherwise(col("Country"))
     )
 
-    // -- Handle LanguageWorkedWith (infer from group, delete remaining Unknown) --
     val validLangs = dfStep8
       .filter(!isMissing("LanguageWorkedWith"))
       .select("Country", "DevType", "Employment", "YearsCoding", "Age", "LanguageWorkedWith")
@@ -248,10 +227,7 @@ object BigDataPreprocessing {
 
     val dfStep10 = dfStep9.filter(col("LanguageWorkedWith") =!= "Unknown")
     println(s"Rows after deletion: ${dfStep10.count()}")
-
-    dfStep10.groupBy("LanguageWorkedWith").count()
-      .orderBy(desc("count")).show(10)
-
+    dfStep10.groupBy("LanguageWorkedWith").count().orderBy(desc("count")).show(10)
     dfStep9 = dfStep10
 
     // ============================================================
@@ -263,7 +239,8 @@ object BigDataPreprocessing {
 
     val finalCount = dfStep9.count()
     println(s"Final rows: $finalCount")
-    println(f"Kept ${finalCount.toDouble / originalCount * 100:.1f}%% of original data")
+    // FIX 3: :.1f → %.1f
+    println(f"Kept ${finalCount.toDouble / originalCount * 100}%.1f%% of original data")
 
     println("\nRemaining missing values check:")
     val checkCols = Seq(
@@ -277,13 +254,12 @@ object BigDataPreprocessing {
         dfStep9.filter(col(colName).isNull).count()
       else
         dfStep9.filter(isMissing(colName)).count()
-
-      val status = if (remaining == 0) "CLEAN" else s"⚠ $remaining missing"
+      val status = if (remaining == 0) "CLEAN" else s"$remaining missing"
       println(f"$colName%-20s : $status")
     }
 
     // ============================================================
-    // 7) OUTLIER DETECTION AND REMOVAL (Z-score on Salary)
+    // 7) OUTLIER DETECTION AND REMOVAL
     // ============================================================
     println("\n" + "=" * 60)
     println("OUTLIER REMOVAL FOR SALARY")
@@ -294,8 +270,8 @@ object BigDataPreprocessing {
       stddev("ConvertedSalary").alias("stddev")
     ).collect()(0)
 
-    val meanSal  = salaryStats.getDouble(0)
-    val stdSal   = salaryStats.getDouble(1)
+    val meanSal = salaryStats.getDouble(0)
+    val stdSal  = salaryStats.getDouble(1)
 
     println(f"Mean salary: $$$meanSal%,.2f")
     println(f"Std deviation: $$$stdSal%,.2f")
@@ -329,9 +305,12 @@ object BigDataPreprocessing {
     println(s"\nFinal dataset:")
     println(s"  Original rows : $originalCount")
     println(s"  Final rows    : ${dfStep10Final.count()}")
-    println(f"  Retention rate: ${dfStep10Final.count().toDouble / originalCount * 100:.1f}%%")
+    // FIX 4: :.1f → %.1f
+    println(f"  Retention rate: ${dfStep10Final.count().toDouble / originalCount * 100}%.1f%%")
 
-    // Save cleaned data
+    // ============================================================
+    // SAVE CLEANED DATA
+    // ============================================================
     println("\n" + "=" * 60)
     println("SAVING FINAL CLEANED DATA")
     println("=" * 60)
@@ -356,7 +335,7 @@ object BigDataPreprocessing {
     println(s"Rows: ${dfCleaned.count()}, Cols: ${dfCleaned.columns.length}")
 
     // ============================================================
-    // 9) REDUCTION — Keep only modeling-relevant columns
+    // 9) REDUCTION
     // ============================================================
     val reducedCols = Seq(
       "Country", "DevType", "Employment", "YearsCoding", "Age", "Gender",
@@ -373,8 +352,6 @@ object BigDataPreprocessing {
     // ============================================================
     // 10) TRANSFORMATION — Feature Engineering + Encoding
     // ============================================================
-
-    // DevType Segmentation (5 classes)
     val dfSeg = dfReduced.withColumn(
       "DevType_segment",
       when(
@@ -403,7 +380,6 @@ object BigDataPreprocessing {
 
     dfSeg.groupBy("DevType_segment").count().orderBy(desc("count")).show(truncate = false)
 
-    // Feature Engineering (counts + log salary)
     val dfFe = dfSeg
       .withColumn(
         "Languages_count",
@@ -431,7 +407,6 @@ object BigDataPreprocessing {
         ).otherwise(log(col("ConvertedSalary").cast("double")))
       )
 
-    // Encoding with StringIndexer (frequency-based)
     val indexerConfigs = Seq(
       ("DevType_segment",  "DevType_segment_indexed"),
       ("Country",          "Country_indexed"),
@@ -452,17 +427,13 @@ object BigDataPreprocessing {
       dfEnc = indexer.fit(dfEnc).transform(dfEnc)
     }
 
-    // Final model-ready dataset
     val dfFinalModel = dfEnc.select(
-      // Raw columns
       col("Country"), col("DevType"), col("Employment"), col("YearsCoding"),
       col("Age"), col("Gender"), col("JobSatisfaction"), col("UndergradMajor"),
       col("EducationTypes"), col("LanguageWorkedWith"), col("ConvertedSalary"),
       col("DevType_segment"),
-      // Engineered numeric
       col("Languages_count"), col("EducationTypes_count"),
       col("Salary_num"), col("Salary_log"),
-      // Encoded for ML
       col("DevType_segment_indexed"), col("Country_indexed"),
       col("Employment_indexed"), col("Gender_indexed"),
       col("UndergradMajor_indexed"), col("Age_encoded"),
@@ -472,7 +443,6 @@ object BigDataPreprocessing {
     dfFinalModel.printSchema()
     dfFinalModel.show(5, truncate = false)
 
-    // Save final transformed data
     println("\n" + "=" * 60)
     println("SAVING FINAL TRANSFORMED DATA")
     println("=" * 60)
@@ -486,7 +456,7 @@ object BigDataPreprocessing {
     println(s"Rows: ${dfFinalModel.count()}, Cols: ${dfFinalModel.columns.length}")
 
     // ============================================================
-    // 11) SNAPSHOT — Show 20 rows of final dataset
+    // 11) SNAPSHOT
     // ============================================================
     val dfSnapshot = spark.read
       .option("header", "true")
