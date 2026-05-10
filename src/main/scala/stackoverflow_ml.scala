@@ -32,7 +32,7 @@ object StackOverflowML {
     val df = spark.read
       .option("header", "true")
       .option("inferSchema", "true")
-      .csv("C:/Users/lolef/Downloads/stackoverflow_final_transformed.csv")
+      .csv("stackoverflow_final_transformed")
 
     val cleanDF = df.filter(
       col("DevType_segment").isNotNull &&
